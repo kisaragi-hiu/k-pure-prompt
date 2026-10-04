@@ -205,6 +205,13 @@ prompt_pure_preprompt_render() {
 		prompt_pure_precustom
 	fi
 
+	psvar[24]=
+	if [[ -n $prompt_pure_container ]]; then
+		local container_symbol
+		zstyle -s ":prompt:pure:container" symbol container_symbol || container_symbol='⬢'
+		psvar[24]="${container_symbol}[${prompt_pure_container}]"
+	fi
+
 	# Build a fingerprint from all dynamic prompt components to detect changes
 	# without expanding PROMPT (which forks a subshell when dimmed path is on).
 	local -a prompt_fingerprint_parts=(
@@ -220,6 +227,7 @@ prompt_pure_preprompt_render() {
 		"${psvar[21]}"
 		"${psvar[22]}"
 		"${psvar[23]}"
+		"${psvar[24]}"
 		"${prompt_pure_state[prompt]}"
 		"${prompt_pure_git_branch_color}"
 		"${PWD}"
@@ -1151,6 +1159,7 @@ prompt_pure_setup() {
 		git:action           yellow
 		git:dirty            218
 		host                 242
+		container            green
 		node_version         green
 		path                 blue
 		prompt:error         red
@@ -1199,6 +1208,7 @@ prompt_pure_setup() {
 	#   psvar[21] = Node.js version (e.g. ⬢22)
 	#   psvar[22] = custom prefix (set by prompt_pure_precustom)
 	#   psvar[23] = custom suffix (set by prompt_pure_precustom)
+	#   psvar[24] = Container (e.g. ⬢[Arch])
 	#
 	# Example output:
 	#   prefix ✦ user@host ~/Code/pure main* rebase ⇣⇡ ≡ ⬢22 3s suffix
@@ -1212,6 +1222,7 @@ prompt_pure_setup() {
 		hostname_part='%F{$prompt_pure_colors[host]}@%m%f'
 	fi
 	PROMPT+='%(13V.%F{$prompt_pure_colors['"${prompt_pure_state[user_color]:-user}"']}%n%f'"${hostname_part}"' .)'
+	PROMPT+='%(24V. %F{$prompt_pure_colors[container]}%24v%f.)'
 	prompt_pure_set_path_separator
 	PROMPT+='${${prompt_pure_path_separator_dimmed:+$(prompt_pure_render_dimmed_path)}:-${prompt_pure_path_segment}}'
 	PROMPT+='%(14V. %F{${prompt_pure_git_branch_color}}%14v%(15V.%F{$prompt_pure_colors[git:dirty]}%15v.)%f.)'
