@@ -1,3 +1,27 @@
+# k-pure-prompt
+
+A [Pure](https://github.com/sindresorhus/pure) fork to add [starship](https://github.com/starship/starship/blob/main/src/modules/container.rs)-style container display like `⬢ [Fedora]` rather than relying on `user@host`.
+
+`user@host` is assumed by tools to mean the user is in ssh, notable in Emacs Tramp where it uses the presence of the `user@host` to know when to make file-visiting commands visit ssh files instead. This fails when the `user@host` is used to indicate a container, as the host isn't supposed to be connected to from ssh in this case.
+
+Work on this fork was not done by AI. The logic for checking the container name is basically directly ported [from starship](https://github.com/starship/starship/blob/main/src/modules/container.rs) though.
+
+## Config
+
+This fork adds two config options:
+
+: `zstyle :prompt:pure:container show yes`
+
+Whether to show the container when applicable. Default is yes.
+
+: `zstyle :prompt:pure:container symbol ⬡`
+
+Change the symbol shown before the container name. Default is `⬢ `.
+
+Below is the original readme.
+
+---
+
 # Pure
 
 > Pretty, minimal and fast ZSH prompt
