@@ -208,7 +208,7 @@ prompt_pure_preprompt_render() {
 	psvar[24]=
 	if [[ -n $prompt_pure_container ]]; then
 		local container_symbol
-		zstyle -s ":prompt:pure:container" symbol container_symbol || container_symbol='⬢'
+		zstyle -s ":prompt:pure:container" symbol container_symbol || container_symbol='⬢ '
 		psvar[24]="${container_symbol}[${prompt_pure_container}]"
 	fi
 
@@ -1222,9 +1222,9 @@ prompt_pure_setup() {
 		hostname_part='%F{$prompt_pure_colors[host]}@%m%f'
 	fi
 	PROMPT+='%(13V.%F{$prompt_pure_colors['"${prompt_pure_state[user_color]:-user}"']}%n%f'"${hostname_part}"' .)'
-	PROMPT+='%(24V. %F{$prompt_pure_colors[container]}%24v%f.)'
+	PROMPT+='%(24V.%F{$prompt_pure_colors[container]}%24v%f.)'
 	prompt_pure_set_path_separator
-	PROMPT+='${${prompt_pure_path_separator_dimmed:+$(prompt_pure_render_dimmed_path)}:-${prompt_pure_path_segment}}'
+	PROMPT+=' ${${prompt_pure_path_separator_dimmed:+$(prompt_pure_render_dimmed_path)}:-${prompt_pure_path_segment}}'
 	PROMPT+='%(14V. %F{${prompt_pure_git_branch_color}}%14v%(15V.%F{$prompt_pure_colors[git:dirty]}%15v.)%f.)'
 	PROMPT+='%(16V. %F{$prompt_pure_colors[git:action]}%16v%f.)'
 	PROMPT+='%(17V. %F{$prompt_pure_colors[git:arrow]}%17v%f.)'
