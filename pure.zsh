@@ -518,7 +518,10 @@ prompt_pure_check_container() {
 	local name=
 	local container_env_path="/run/.containerenv"
 	local systemd_path="/run/systemd/container"
-	if [[ -f "/proc/vz" ]] && [[ ! -f "/proc/bc" ]]; then
+	if [[ -n "${CODESPACES}" ]]; then
+		# don't show if in GitHub Codespaces
+		name=
+	elif [[ -f "/proc/vz" ]] && [[ ! -f "/proc/bc" ]]; then
 		name="OpenVZ"
 	elif [[ -f "/run/host-container-manager" ]]; then
 		name="OCI"
@@ -992,9 +995,6 @@ prompt_pure_state_setup() {
 	local user_color
 	# Show `username@host` if logged in through SSH.
 	[[ -n $ssh_connection ]] && user_color=user
-
-	# Show `username@host` if inside a container and not in GitHub Codespaces.
-	[[ -z "${CODESPACES}" ]] && prompt_pure_is_inside_container && user_color=user
 
 	# Show `username@host` if root, with username in default color.
 	[[ $UID -eq 0 ]] && user_color=user:root
