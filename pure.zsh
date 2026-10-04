@@ -607,7 +607,7 @@ prompt_pure_async_tasks() {
 	fi
 
 	# Check if Container display is enabled (default: yes).
-	if ! zstyle -T ":prompt:pure:container" show; then
+	if zstyle -T ":prompt:pure:container" show; then
 		typeset -g prompt_pure_container=$(prompt_pure_check_container)
 	fi
 
