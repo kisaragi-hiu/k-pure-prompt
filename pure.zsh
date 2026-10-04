@@ -504,6 +504,41 @@ prompt_pure_check_node_version() {
 	print -r -- "$version"
 }
 
+prompt_pure_check_container() {
+	setopt localoptions noshwordsplit
+	# Logic ported from https://github.com/starship/starship/blob/f5641f7290696a0a9600bf015ab3ef7e4e64e758/src/modules/container.rs
+	local name=
+	local container_env_path="/run/.containerenv"
+	local systemd_path="/run/systemd/container"
+	if [[ -f "/proc/vz" ]] && [[ ! -f "/proc/bc" ]]; then
+		name="OpenVZ"
+	elif [[ -f "/run/host-container-manager" ]]; then
+		name="OCI"
+	elif [[ -f "/dev/incus/sock" ]]; then
+		name="Incus"
+	elif [[ -f $container_env_path ]]; then
+		# podman and others
+		name=$(grep "^name=" $container_env_path | sed 's/^name="\(.*\)"$/\1/')
+		if [[ -z $name ]]; then
+			name=$(grep "^image=" /run/.containerenv | sed s/'^image=".*\/\([^/]*\)"$/\1/')
+		fi
+		if [[ -z $name ]]; then
+			name=podman
+		fi
+	elif [[ -f $systemd_path ]]; then
+		case $(cat $systemd_path) in
+			docker) name=Docker;;
+			# wsl with systemd sets this file to "wsl" which should not be shown
+			wsl) name=;;
+			*) name=Systemd;;
+		esac
+	elif [[ -f "/.dockerenv" ]]; then
+		name=Docker
+	fi
+
+	print -r -- "$name"
+}
+
 # Try to lower the priority of the worker so that disk heavy operations
 # like `git status` has less impact on the system responsivity.
 prompt_pure_async_renice() {
@@ -558,6 +593,11 @@ prompt_pure_async_tasks() {
 	else
 		unset prompt_pure_node_version
 		unset prompt_pure_node_cache_key
+	fi
+
+	# Check if Container display is enabled (default: yes).
+	if ! zstyle -T ":prompt:pure:container" show; then
+		typeset -g prompt_pure_container=$(prompt_pure_check_container)
 	fi
 
 	# Check if git integration is enabled (default: yes).
